@@ -1,0 +1,31 @@
+version: '3'
+services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports: [5432:5432]
+    command: >-
+      -p 5432
+      -c 'log_statement=all'
+      -c 'log_connections=on'
+      -c 'log_disconnections=on'
+      -c 'logging_collector=on'
+      -c 'log_destination=stderr'
+    volumes: [pg-data:/var/lib/postgresql/data]
+    networks: [db_network, external]
+  adminer:
+    image: adminer
+    ports: [8080:8080]
+    depends_on: [db]
+    networks: [db_network, external]
+networks:
+  db_network:
+    driver: bridge
+    internal: true
+  be_network:
+    driver: bridge
+    internal: true
+  external: {}
+volumes:
+  pg-data: {}
